@@ -35,6 +35,29 @@ public class PatientService {
 		return patientRepository.save(existingPatient);
 	}
 
+	public Patient updatePatient(String id, Patient patient) throws InvalidUUIDException, NoPatientException, PatientAlreadyExistsException {
+		uuidHelper.ensureValidUUID(id);
+		final var existingPatient = patientRepository.findById(id).orElse(null);
+		if (existingPatient == null) {
+			throw new NoPatientException();
+		}
+		final var patientId = patient.getPatientId();
+		if (patientId != null && !existingPatient.getPatientId().equals(patientId)) {
+			final var patientWithNewId = patientRepository.findByPatientId(patientId);
+			if (patientWithNewId != null) {
+				throw new PatientAlreadyExistsException();
+			}
+			existingPatient.setPatientId(patientId);
+		}
+		existingPatient.setLastName(patient.getLastName());
+		existingPatient.setFirstName(patient.getFirstName());
+		existingPatient.setMiddleName(patient.getMiddleName());
+		existingPatient.setDob(patient.getDob());
+		existingPatient.setGender(patient.getGender());
+		patientRepository.save(existingPatient);
+		return existingPatient;
+	}
+
 	public void deletePatient(String id) throws InvalidUUIDException, NoPatientException {
 		uuidHelper.ensureValidUUID(id);
 		final var patient = patientRepository.findById(id).orElse(null);
