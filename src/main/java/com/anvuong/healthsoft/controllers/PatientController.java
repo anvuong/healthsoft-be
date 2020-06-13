@@ -11,13 +11,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anvuong.healthsoft.exceptions.InvalidUUIDException;
+import com.anvuong.healthsoft.exceptions.NoPatientException;
 import com.anvuong.healthsoft.exceptions.PatientAlreadyExistsException;
 import com.anvuong.healthsoft.models.Patient;
 import com.anvuong.healthsoft.services.PatientService;
@@ -37,6 +41,22 @@ public class PatientController {
 			HashMap<String, String> map = new HashMap<>();
 			map.put("message", "PatientId already exists");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+		}
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deletePatient(@PathVariable String id) {
+		try {
+			patientService.deletePatient(id);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		} catch (InvalidUUIDException e) {
+			HashMap<String, String> map = new HashMap<>();
+			map.put("message", "Invalid UUID");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+		} catch (NoPatientException e) {
+			HashMap<String, String> map = new HashMap<>();
+			map.put("message", "No patient found");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
 		}
 	}
 
