@@ -7,5 +7,5 @@ import com.anvuong.healthsoft.models.Patient;
 
 @Repository("patientRepository")
 public interface PatientRepository extends JpaRepository<Patient, String> {
-
+	Patient findByPatientId(String patientId);
 }
