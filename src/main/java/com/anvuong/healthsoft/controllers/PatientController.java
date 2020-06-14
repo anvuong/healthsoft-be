@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -72,6 +73,21 @@ public class PatientController {
 		} catch (PatientAlreadyExistsException e) {
 			HashMap<String, String> map = new HashMap<>();
 			map.put("message", "Patient with patientId: " + patient.getPatientId() + " exists");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+		} catch (NoPatientException e) {
+			HashMap<String, String> map = new HashMap<>();
+			map.put("message", "No patient found");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
+		}
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<?> getPatient(@PathVariable String id) {
+		try {
+			return ResponseEntity.ok(patientService.getPatient(id));
+		} catch (InvalidUUIDException e) {
+			HashMap<String, String> map = new HashMap<>();
+			map.put("message", "Invalid UUID");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
 		} catch (NoPatientException e) {
 			HashMap<String, String> map = new HashMap<>();

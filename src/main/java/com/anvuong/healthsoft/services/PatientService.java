@@ -58,6 +58,15 @@ public class PatientService {
 		return existingPatient;
 	}
 
+	public Patient getPatient(String id) throws InvalidUUIDException, NoPatientException {
+		uuidHelper.ensureValidUUID(id);
+		final var existingPatient = patientRepository.findById(id).orElse(null);
+		if (existingPatient == null) {
+			throw new NoPatientException();
+		}
+		return existingPatient;
+	}
+
 	public void deletePatient(String id) throws InvalidUUIDException, NoPatientException {
 		uuidHelper.ensureValidUUID(id);
 		final var patient = patientRepository.findById(id).orElse(null);
